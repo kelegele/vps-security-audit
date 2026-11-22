@@ -89,6 +89,25 @@ pasted output exactly as in step 2–3.
   (xray/hysteria/sing-box) relaying user traffic is normal; connections to
   IRC ports (6667), unknown mining pools, or bulk SMTP are not.
 
+## Report delivery by channel
+
+Adapt the report format to the delivery channel:
+
+- **Default (terminal / web chat / clipboard / email)**: GFM markdown — pipe
+  table (`| # | Check | Verdict |`) renders everywhere.
+- **Feishu/Lark webhook card**: use schema-2.0 interactive card — elements
+  live under `card.body.elements` (NOT `card.elements`); the list is a
+  `table` component (columns + rows), which has **no `row_size` property**
+  (error 11246); `note` elements are also rejected under 2.0 — use a grey
+  markdown line instead. Verified working 2026-11. If card parse fails,
+  fall back to one-line-per-check markdown in the same card.
+- **Channels without table support** (e.g. Telegram): one line per check
+  (`01 系统上下文　✅`), verdict emojis kept, details as plain lines.
+
+Principle: use the channel's native table component when it has one;
+otherwise fall back to the most portable markdown. Never dump raw pipe
+table text into a channel that won't render it.
+
 ## Safety rules
 
 - **Read-only**: never delete files, kill processes, edit configs, or "clean
